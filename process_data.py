@@ -3,25 +3,27 @@ import pandas as pd
 
 def main(data_file_path = None,**kwargs):
 
+    print('processing data ...')
+
     default = {
-        'drop_columns' : []
+        'drop_columns' : [],
+        'to_datetime_columns':[],
     }
 
     args = {**default,**kwargs}
 
-    print('processing data ...')
     df_data = pd.read_excel(data_file_path, decimal = ',')
-    for columna in ['fecha_muerte', 'fecha_alta', 'fecha_cirugia','fecha_eco','fecha_trat1','fecha_prev1','fecha_prev2', 'fecha_prev3']:
-    df_data[columna] = pd.to_datetime(df_data[columna], errors = 'coerce')
 
-    df_data =df_data.drop(['comments','revisar medida','diam_ao', 'diam_mitral','diam_ao_2','diam_mitral_2','indicacion_cirugia','fecha_diagnostico'],axis=1)
+    for columna in args['to_datetime_columns']:
+        df_data[columna] = pd.to_datetime(df_data[columna], errors = 'coerce')
 
-    data_processed = []
+    df_data =df_data.drop(args['drop_columns'],axis=1)
 
-    return data_processed
+    
+
+    return df_data
     
 
 if __name__ == '__main__':
-
 
     main()
