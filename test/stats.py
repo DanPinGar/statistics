@@ -2,6 +2,8 @@
 from lifelines import CoxPHFitter,CoxTimeVaryingFitter
 from scipy.stats import ttest_ind
 from sklearn.metrics import roc_curve, roc_auc_score
+import cmprsk.cmprsk as cmprsk
+from cmprsk import utils
 
 
 def p_value(group_a,group_b):
@@ -46,3 +48,9 @@ def conx_tvaryng(
     ctv.fit(df,id_col=id_col, start_col=start_col, stop_col=stop_col, event_col=event_col, show_progress=args['show_progress'])
     ctv.print_summary()
 
+
+def fine_gray(df = None,covars_names_list = None,col_time = None, col_event = None):
+        
+    X = utils.as_indicators(df[covars_names_list], [], bases=None)  # Preprocesar covariables
+    crr_result = cmprsk.crr(df[col_time], df[col_event], X)  # Ajustar modelo Fine–Gray para “evento de interés = 1” 
+    print(crr_result.summary)
