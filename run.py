@@ -1,13 +1,18 @@
-import process_data_1, process_data_2
 from libs import plots
 from test import stats
+
+import process_data as pr
+
 
 def main(data_file_path):
 
     to_datetime_columns = ['fecha_muerte', 'fecha_alta', 'fecha_cirugia','fecha_eco','fecha_trat1','fecha_prev1','fecha_prev2', 'fecha_prev3']
     drop_columns =['comments','revisar medida','diam_ao', 'diam_mitral','diam_ao_2','diam_mitral_2','indicacion_cirugia','fecha_diagnostico']
     
-    df_data,df_analysis = process_data_1.main(
+    event_map_1 = {'surg': 0,'prev': 1,'embo': 1,'muer': 0,'alta': 0}
+
+    df_data,df_analysis = pr.pr_1(
+        event_map_1,
         data_file_path,
         drop_columns = drop_columns,
         to_datetime_columns = to_datetime_columns
@@ -51,7 +56,7 @@ def main(data_file_path):
     
     # ================= COX TV FITTER =================
 
-    df_data_time = process_data_2.main(df_analysis)
+    df_data_time = pr.pr_2(event_map_1,df_analysis)
 
     stats.conx_tvaryng(
         df = df_data_time,
@@ -59,10 +64,18 @@ def main(data_file_path):
         start_col = 'start',
         stop_col = 'stop',
         event_col = 'event',
-        show_progress=True
+        show_progress = True,
     )
-   
-    
+
+
+    # ================= FINE GRAY =================
+
+    event_map_2 = {'surg': 0,'prev': 1,'embo': 1,'muer': 2,'alta': 0 }
+
+    df_fine_gray = pr.pr_3(df_analysis,event_map_2)  
+    stats.fine_gray(
+        df = df_fine_gray,covars_names_list = ['diameter'],col_time = 'days', col_event = 'event'
+    )
 
 if __name__ == '__main__':
 

@@ -49,7 +49,9 @@ def conx_tvaryng(
     args = {**default,**kwargs}
 
     ctv = CoxTimeVaryingFitter()
-    ctv.fit(df,id_col=id_col, start_col=start_col, stop_col=stop_col, event_col=event_col, show_progress=args['show_progress'])
+    ctv.fit(
+        df,id_col=id_col, start_col=start_col, stop_col=stop_col, event_col=event_col, show_progress=args['show_progress']
+    )
     ctv.print_summary()
     ctv.plot(columns=["diameter"])
     plt.show()
@@ -57,6 +59,6 @@ def conx_tvaryng(
 
 def fine_gray(df = None,covars_names_list = None,col_time = None, col_event = None):
         
-    X = utils.as_indicators(df[covars_names_list], [], bases=None)  # Preprocesar covariables
+    X = utils.as_indicators(df[covars_names_list], [], bases = None)  # Preprocesar covariables
     crr_result = cmprsk.crr(df[col_time], df[col_event], X)  # Ajustar modelo Fine–Gray para “evento de interés = 1” 
     print(crr_result.summary)
