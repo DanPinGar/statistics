@@ -1,4 +1,4 @@
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
 def labeled_plot(x,y,label,**kwargs):
@@ -17,4 +17,20 @@ def labeled_plot(x,y,label,**kwargs):
     plt.ylabel(args['y_name'])
     plt.title(args['title'])
     plt.legend()
+    plt.show()
+
+
+
+def labeled_boxplot(data,labels,**kwargs):
+
+    default = {
+        'tile':'',
+        'ylabel':'',
+    }
+
+    args = {**default,**kwargs}
+
+    plt.boxplot(data, labels=labels)
+    plt.ylabel(args['ylabel'])
+    plt.title(args['title'])
     plt.show()

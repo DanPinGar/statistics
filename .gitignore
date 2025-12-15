@@ -1,2 +1,11 @@
 test/__pycache__/__init__.cpython-313.pyc
 .gitignore
+__pycache__/process_data_1.cpython-313.pyc
+.gitignore
+.gitignore
+libs/__pycache__/plots.cpython-313.pyc
+.gitignore
+test/__pycache__/stats.cpython-313.pyc
+__pycache__/process_data_2.cpython-313.pyc
+libs/__pycache__/__init__.cpython-313.pyc
+test/__pycache__/stats.cpython-313.pyc

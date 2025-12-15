@@ -1,4 +1,6 @@
 
+import pandas as pd
+import matplotlib.pyplot as plt
 from lifelines import CoxPHFitter,CoxTimeVaryingFitter
 from scipy.stats import ttest_ind
 from sklearn.metrics import roc_curve, roc_auc_score
@@ -13,7 +15,7 @@ def p_value(cases,controls):
 
 def roc(cases=None,controls=None):
     y_true = [1]*len(cases) + [0]*len(controls)
-    y_scores = cases + controls                       # Junta los valores de 'diameter' de ambos grupos
+    y_scores = pd.concat([cases,controls])  # Junta los valores de 'diameter' de ambos grupos
 
     fpr, tpr, thresholds = roc_curve(y_true, y_scores)
     auc = roc_auc_score(y_true, y_scores)
@@ -26,6 +28,9 @@ def prop_hazard(df = None, duration_col=None, event_col=None):
     cph.fit(df, duration_col = duration_col, event_col=event_col)
     print(cph.summary)
     cph.plot()
+    plt.show()
+    cph.check_assumptions(df, show_plots=True)  # Gráfico de residuos de Schoenfeld 
+    plt.show()
 
 
 def conx_tvaryng(
@@ -46,6 +51,8 @@ def conx_tvaryng(
     ctv = CoxTimeVaryingFitter()
     ctv.fit(df,id_col=id_col, start_col=start_col, stop_col=stop_col, event_col=event_col, show_progress=args['show_progress'])
     ctv.print_summary()
+    ctv.plot(columns=["diameter"])
+    plt.show()
 
 
 def fine_gray(df = None,covars_names_list = None,col_time = None, col_event = None):

@@ -82,7 +82,7 @@ def main(data_file_path = None,**kwargs):
 
 
 
-    return df_data
+    return df_data,df_analysis
     
 
 if __name__ == '__main__':
