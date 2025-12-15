@@ -6,23 +6,22 @@ import cmprsk.cmprsk as cmprsk
 from cmprsk import utils
 
 
-def p_value(group_a,group_b):
-
-    stat, p_value = ttest_ind(group_a, group_b)
-    print("p-valor:", f"{p_value:.6f}")
+def p_value(cases,controls):
+    stat, p_value = ttest_ind(cases, controls)
+    print( f'\n p-value: {p_value:.6f} \n')
 
 
 def roc(cases=None,controls=None):
-
     y_true = [1]*len(cases) + [0]*len(controls)
     y_scores = cases + controls                       # Junta los valores de 'diameter' de ambos grupos
 
     fpr, tpr, thresholds = roc_curve(y_true, y_scores)
     auc = roc_auc_score(y_true, y_scores)
 
+    return auc,fpr, tpr
+
 
 def prop_hazard(df = None, duration_col=None, event_col=None):
-
     cph = CoxPHFitter()
     cph.fit(df, duration_col = duration_col, event_col=event_col)
     print(cph.summary)

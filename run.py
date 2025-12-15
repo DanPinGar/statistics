@@ -1,5 +1,5 @@
 import process_data
-
+from test import stats
 
 def main(data_file_path):
 
@@ -9,14 +9,11 @@ def main(data_file_path):
     df_data = process_data.main(
         data_file_path,
         drop_columns = drop_columns,
-        to_datetime_columns=to_datetime_columns
+        to_datetime_columns = to_datetime_columns
         )
     
     df_cases =  df_data[ df_data['event']==1]
     df_controls = df_data[df_data['event']==0]
-
-    print('Cases:',df_cases.shape[0])
-    print('Controls:',df_controls.shape[0])
 
     mean_cases = df_cases['diameter'].mean()
     std_cases = df_cases['diameter'].std()
@@ -24,15 +21,30 @@ def main(data_file_path):
     mean_controls = df_controls['diameter'].mean()
     std_controls = df_controls['diameter'].std()
 
-    print("Mean Final Cases:", mean_cases)
-    print("Std Final Cases:", std_cases)
-    print("Mean Final Controls:", mean_controls)
-    print("Std Final Controls:", std_controls)
+    print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
+    print(f'Mean Final Cases:, {mean_cases} +- {std_cases}')
+    print(f'Mean Final Controls: {mean_controls} +- {std_controls}')
+
+    # ================= P-VALUE =================
+
+    stats.p_value(df_cases['diameter'],df_controls['diameter'])
+
+    auc,fpr,tpr = stats.roc(df_cases['diameter'],df_controls['diameter'])
+
+    stats.labeled_plot(
+    fpr,
+    tpr,
+    auc,
+    title = 'Curva ROC',
+    x_name = 'False Positive Rate',
+    y_name ='True Positive Rate',
+    )
+
+
     
 
 if __name__ == '__main__':
 
     data_file_path = './data.xlsx'
-
     
     main(data_file_path)
