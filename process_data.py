@@ -9,7 +9,6 @@ def clean_excel(data_file_path=None, **kwargs):
     }
 
     args = {**default, **kwargs}
-
     df = pd.read_excel(data_file_path, decimal=',')
 
     for columna in args['to_datetime_columns']:
