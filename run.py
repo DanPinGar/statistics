@@ -38,6 +38,7 @@ def main(data_file_path):
 
     plots.labeled_boxplot([cases_final, controls_final],['Cases', 'Controls'],title = 'diam',ylabel= 'diam' )
 
+
     # ================= P-VALUE,ROC =================
 
     stats.p_value(cases_final,controls_final)
@@ -47,6 +48,7 @@ def main(data_file_path):
         fpr,tpr,auc,title = 'ROC',x_name = 'FP Rate',y_name ='TP Rate'
         )
 
+
     # ================= COX PH FITTER =================
 
     df_data_cox = df_data[[ 'days','event','diameter']]
@@ -54,6 +56,7 @@ def main(data_file_path):
         df = df_data_cox, duration_col = 'days', event_col = 'event'
         )
     
+
     # ================= COX TV FITTER =================
 
     df_data_time = pr.pr_2(event_map_1,df_analysis)
@@ -76,6 +79,7 @@ def main(data_file_path):
     stats.fine_gray(
         df = df_fine_gray,covars_names_list = ['diameter'],col_time = 'days', col_event = 'event'
     )
+
 
 if __name__ == '__main__':
 

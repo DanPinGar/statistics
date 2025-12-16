@@ -87,7 +87,7 @@ def add_file_data_time(df,evm, fecha_temprana, ident, fecha_eco=None, fecha_init
     if fila_data['event'] is None:
         print('error:', ident)
 
-    print(fecha_temprana, fila_data)
+    # print(fecha_temprana, fila_data)
     df.loc[len(df)] = fila_data
 
     return df
