@@ -7,16 +7,17 @@ import process_data as pr
 def main(data_file_path):
 
     to_datetime_columns = ['fecha_muerte', 'fecha_alta', 'fecha_cirugia','fecha_eco','fecha_trat1','fecha_prev1','fecha_prev2', 'fecha_prev3']
-    drop_columns =['comments','revisar medida','diam_ao', 'diam_mitral','diam_ao_2','diam_mitral_2','indicacion_cirugia','fecha_diagnostico']
+    drop_columns =['comments', 'fecha_trat2','revisar medida','diam_ao', 'diam_mitral','diam_ao_2','diam_mitral_2','result','indicacion_cirugia','fecha_diagnostico']
     
-    event_map_1 = {'surg': 0,'prev': 1,'embo': 1,'muer': 0,'alta': 0}
-
-    df_data,df_analysis = pr.pr_1(
-        event_map_1,
+    df = pr.clean_excel(
         data_file_path,
         drop_columns = drop_columns,
         to_datetime_columns = to_datetime_columns
-        )
+    )
+
+    event_map_1 = {'surg': 0,'prev': 1,'embo': 1,'muer': 0,'alta': 0}
+
+    df_data,df_analysis = pr.pr_1(event_map_1,df)
     
     # ================= MEAN =================
 
@@ -36,42 +37,47 @@ def main(data_file_path):
     print(f'Mean Final Cases:, {mean_cases} +- {std_cases}')
     print(f'Mean Final Controls: {mean_controls} +- {std_controls}')
 
-    plots.labeled_boxplot([cases_final, controls_final],['Cases', 'Controls'],title = 'diam',ylabel= 'diam' )
-
-
-    # ================= P-VALUE,ROC =================
-
-    stats.p_value(cases_final,controls_final)
-
-    auc,fpr,tpr = stats.roc(cases_final,controls_final)
-    plots.labeled_plot(
-        fpr,tpr,auc,title = 'ROC',x_name = 'FP Rate',y_name ='TP Rate'
+    if show_plots:
+        plots.labeled_boxplot(
+            [cases_final, controls_final],['Cases', 'Controls'],title = 'diam',ylabel= 'diam'
         )
 
+    print('\n================= P-VALUE,ROC =================\n')
 
-    # ================= COX PH FITTER =================
+    stats.p_value(cases_final,controls_final)
+    auc,fpr,tpr = stats.roc(cases_final,controls_final)
+
+    if show_plots:
+        plots.labeled_plot(
+            fpr,tpr,auc,title = 'ROC',x_name = 'FP Rate',y_name ='TP Rate'
+            )
+
+    print('\n================= COX PH FITTER =================\n')
 
     df_data_cox = df_data[[ 'days','event','diameter']]
     stats.prop_hazard(
-        df = df_data_cox, duration_col = 'days', event_col = 'event'
+        df = df_data_cox, duration_col = 'days', event_col = 'event',show_plots = show_plots,
         )
     
 
-    # ================= COX TV FITTER =================
+    print('\n================= COX TV FITTER =================\n')
 
     df_data_time = pr.pr_2(event_map_1,df_analysis)
 
-    stats.conx_tvaryng(
+    df_data_time.to_excel('df_data_time.xlsx', index=False) 
+
+    stats.cox_tvaryng(
         df = df_data_time,
         id_col = 'id',
         start_col = 'start',
         stop_col = 'stop',
         event_col = 'event',
         show_progress = True,
+        show_plots = show_plots,
     )
 
 
-    # ================= FINE GRAY =================
+    print('\n================= FINE GRAY =================\n')
 
     event_map_2 = {'surg': 0,'prev': 1,'embo': 1,'muer': 2,'alta': 0 }
 
@@ -84,5 +90,6 @@ def main(data_file_path):
 if __name__ == '__main__':
 
     data_file_path = './data.xlsx'
+    show_plots = False
     
     main(data_file_path)

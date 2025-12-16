@@ -23,17 +23,19 @@ def roc(cases=None,controls=None):
     return auc,fpr, tpr
 
 
-def prop_hazard(df = None, duration_col=None, event_col=None):
+def prop_hazard(df = None, duration_col=None, event_col=None,**kwargs):
     cph = CoxPHFitter()
     cph.fit(df, duration_col = duration_col, event_col=event_col)
     print(cph.summary)
     cph.plot()
-    plt.show()
+    if kwargs['show_plots']:
+        plt.show()
     cph.check_assumptions(df, show_plots=True)  # Gráfico de residuos de Schoenfeld 
-    plt.show()
+    if kwargs['show_plots']:
+        plt.show()
 
 
-def conx_tvaryng(
+def cox_tvaryng(
         df = None,
         id_col = None,
         start_col = None,
@@ -44,6 +46,7 @@ def conx_tvaryng(
     
     default = {
         'show_progress':True,
+        'show_plots':True
     }
 
     args = {**default,**kwargs}
@@ -54,7 +57,8 @@ def conx_tvaryng(
     )
     ctv.print_summary()
     ctv.plot(columns=["diameter"])
-    plt.show()
+    if args['show_plots']:
+        plt.show()
 
 
 def fine_gray(df = None,covars_names_list = None,col_time = None, col_event = None):

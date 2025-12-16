@@ -1,19 +1,7 @@
 import pandas as pd
 
 
-def _get_fecha_prev_max(row):
-    return max(
-        (f for f in [row['fecha_prev1'], row['fecha_prev2'], row['fecha_prev3']] if pd.notna(f)),
-        default=pd.NaT
-    )
-
-
-def _get_fecha_temprana(lista_fechas, lista_eventos):
-    fecha_min = min(f for f in lista_fechas if pd.notna(f))
-    return fecha_min, lista_eventos[lista_fechas.index(fecha_min)]
-
-
-def pr_1(event_map,data_file_path=None, **kwargs):
+def clean_excel(data_file_path=None, **kwargs):
 
     default = {
         'drop_columns': [],
@@ -29,6 +17,24 @@ def pr_1(event_map,data_file_path=None, **kwargs):
 
     df = df.drop(args['drop_columns'], axis=1)
 
+    return df
+
+
+def _get_fecha_prev_max(row):
+    return max(
+        (f for f in [row['fecha_prev1'], row['fecha_prev2'], row['fecha_prev3']] if pd.notna(f)),
+        default=pd.NaT
+    )
+
+
+def _get_fecha_temprana(lista_fechas, lista_eventos):
+    fecha_min = min(f for f in lista_fechas if pd.notna(f))
+    return fecha_min, lista_eventos[lista_fechas.index(fecha_min)]
+
+
+def pr_1(event_map, df):
+
+
     df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter'])
 
     df_analysis = df[df['Valido'] == True].copy()
@@ -38,7 +44,7 @@ def pr_1(event_map,data_file_path=None, **kwargs):
     df_analysis['muerte'] = df_analysis['fecha_muerte'].notna()
     df_analysis['previa'] = df_analysis['fecha_prev1'].notna()
 
-    df_analysis = df_analysis.drop(['Valido', 'result', 'PatientID', 'fecha_trat2'], axis=1)
+    df_analysis = df_analysis.drop(['Valido', 'PatientID'], axis=1)
 
     for _, row in df_analysis.iterrows():
 
@@ -153,7 +159,7 @@ def pr_3(df_analysis,event_map):
 
     for _, row in df_analysis.iterrows():
 
-        lista_fechas = [row['fecha_cirugia'], row['fecha_alta'], row['fecha_muerte']]
+        lista_fechas = [row['fecha_cirugia'],row['fecha_alta'], row['fecha_muerte']]
         lista_eventos = ['surg', 'alta', 'muer']
 
         if pd.notna(row['fecha_trat1']) and row['fecha_trat1'] >= row['fecha_eco']:
@@ -171,7 +177,7 @@ def pr_3(df_analysis,event_map):
             'id': row['record_id'],
             'diameter': row['Final'],
             'days': (fecha_min - row['fecha_eco']).days,
-            'event': event_map.get(fecha_temprana)
+            'event': event_map.get(fecha_temprana),
         }
 
         if fila_data['event'] is None:
