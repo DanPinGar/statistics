@@ -100,6 +100,6 @@ def main(data_file_path):
 if __name__ == '__main__':
 
     data_file_path = DATA_DIR + 'data.xlsx'
-    show_plots = False
+    show_plots = True
     
     main(data_file_path)
