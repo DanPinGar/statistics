@@ -17,89 +17,97 @@ def main(data_file_path):
         to_datetime_columns = to_datetime_columns
     )
 
-    event_map_1 = {'surg': 0,'prev': 1,'embo': 1,'muer': 0,'alta': 0}
+    df_data,df_analysis = pr.pr_1(event_map,df)
 
-    df_data,df_analysis = pr.pr_1(event_map_1,df)
-    
-    print('\n================= MEAN =================\n')
+    if 'basic_stats' in analysis_to_perform:
 
-    df_cases =  df_data[ df_data['event']==1]
-    df_controls = df_data[df_data['event']==0]
+        print('\n================= MEAN =================\n')
 
-    df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index=False) 
-    df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index=False) 
+        df_cases =  df_data[ df_data['event']==1]
+        df_controls = df_data[df_data['event']==0]
 
-    cases_final = df_cases['diameter']
-    controls_final = df_controls['diameter']
+        df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index=False) 
+        df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index=False) 
 
-    mean_cases = cases_final.mean()
-    std_cases  = cases_final.std()
+        cases_final = df_cases['diameter']
+        controls_final = df_controls['diameter']
 
-    mean_controls = controls_final.mean()
-    std_controls  = controls_final.std()
+        mean_cases = cases_final.mean()
+        std_cases  = cases_final.std()
 
-    print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
-    print(f'Mean Final Cases:, {mean_cases} +- {std_cases}')
-    print(f'Mean Final Controls: {mean_controls} +- {std_controls}')
+        mean_controls = controls_final.mean()
+        std_controls  = controls_final.std()
 
-    if show_plots:
-        plots.labeled_boxplot(
-            [cases_final, controls_final],['Cases', 'Controls'],title = 'diam',ylabel= 'diam'
-        )
+        print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
+        print(f'Mean Final Cases:, {mean_cases} +- {std_cases}')
+        print(f'Mean Final Controls: {mean_controls} +- {std_controls}')
 
-    print('\n================= P-VALUE,ROC =================\n')
-
-    stats.p_value(cases_final,controls_final)
-    auc,fpr,tpr = stats.roc(cases_final,controls_final)
-
-    if show_plots:
-        plots.labeled_plot(
-            fpr,tpr,auc,title = 'ROC',x_name = 'FP Rate',y_name ='TP Rate'
+        if show_plots:
+            plots.labeled_boxplot(
+                [cases_final, controls_final],['Cases', 'Controls'],title = 'diam',ylabel= 'diam'
             )
 
-    print('\n================= COX PH FITTER =================\n')
+        print('\n================= P-VALUE,ROC =================\n')
 
-    df_data_cox = df_data[[ 'days','event','diameter']]
-    df_data_cox.to_excel(DATA_DIR + 'df_data_cox.xlsx', index=False) 
+        stats.p_value(cases_final,controls_final)
+        auc,fpr,tpr = stats.roc(cases_final,controls_final)
 
-    stats.prop_hazard(
-        df = df_data_cox,
-        duration_col = 'days',
-        event_col = 'event',
-        show_plots = show_plots,
-    )
+        if show_plots:
+            plots.labeled_plot(
+                fpr,tpr,auc,title = 'ROC',x_name = 'FP Rate',y_name ='TP Rate'
+                )
+
+    if 'cox_ph' in analysis_to_perform:
+
+        print('\n================= COX PH FITTER =================\n')
+
+        df_data_cox = df_data[[ 'days','event','diameter']]
+        df_data_cox.to_excel(DATA_DIR + 'df_data_cox.xlsx', index=False) 
+
+        stats.prop_hazard(
+            df = df_data_cox,
+            duration_col = 'days',
+            event_col = 'event',
+            show_plots = show_plots,
+        )
     
+    if 'cox_tv' in analysis_to_perform:
+        print('\n================= COX TV FITTER =================\n')
 
-    print('\n================= COX TV FITTER =================\n')
+        df_data_time = pr.pr_2(event_map,df_analysis)
 
-    df_data_time = pr.pr_2(event_map_1,df_analysis)
+        df_data_time.to_excel(DATA_DIR + 'df_data_time.xlsx', index=False) 
 
-    df_data_time.to_excel(DATA_DIR + 'df_data_time.xlsx', index=False) 
+        stats.cox_tvaryng(
+            df = df_data_time,
+            id_col = 'id',
+            start_col = 'start',
+            stop_col = 'stop',
+            event_col = 'event',
+            show_progress = True,
+            show_plots = show_plots,
+        )
 
-    stats.cox_tvaryng(
-        df = df_data_time,
-        id_col = 'id',
-        start_col = 'start',
-        stop_col = 'stop',
-        event_col = 'event',
-        show_progress = True,
-        show_plots = show_plots,
-    )
+    if 'fine_gray' in analysis_to_perform:
 
+        print('\n================= FINE GRAY =================\n')
 
-    print('\n================= FINE GRAY =================\n')
-
-    event_map_2 = {'surg': 0,'prev': 1,'embo': 1,'muer': 2,'alta': 0 }
-
-    df_fine_gray = pr.pr_3(df_analysis,event_map_2)  
-    stats.fine_gray(
-        df = df_fine_gray,covars_names_list = ['diameter'],col_time = 'days', col_event = 'event'
-    )
+        df_fine_gray = pr.pr_3(df_analysis,event_map_gray)  
+        stats.fine_gray(
+            df = df_fine_gray,covars_names_list = ['diameter'],col_time = 'days', col_event = 'event'
+        )
 
 
 if __name__ == '__main__':
 
     data_file_path = DATA_DIR + 'data.xlsx'
-    show_plots = True
+    show_plots = False
+
+    analysis_to_perform = [
+        'basic_stats','cox_ph','cox_tv' # Options: 'basic_stats','cox_ph','cox_tv','fine_gray'
+    ]
+
+    event_map = {'surg': 0,'prev': 1,'embo': 1,'muer': 0,'alta': 0}
+    event_map_gray = {'surg': 0,'prev': 1,'embo': 1,'muer': 2,'alta': 0 }
     
     main(data_file_path)
