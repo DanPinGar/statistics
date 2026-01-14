@@ -26,8 +26,8 @@ def main(data_file_path):
         df_cases =  df_data[ df_data['event']==1]
         df_controls = df_data[df_data['event']==0]
 
-        df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index=False) 
-        df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index=False) 
+        df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index = False) 
+        df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index = False) 
 
         cases_final = df_cases['diameter']
         controls_final = df_controls['diameter']
