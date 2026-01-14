@@ -9,7 +9,7 @@ from config import DATA_DIR
 def main(data_file_path):
 
     to_datetime_columns = ['fecha_muerte', 'fecha_alta', 'fecha_cirugia','fecha_eco','fecha_trat1','fecha_prev1','fecha_prev2', 'fecha_prev3']
-    drop_columns =['comments', 'fecha_trat2','revisar medida','diam_ao', 'diam_mitral','diam_ao_2','diam_mitral_2','result','indicacion_cirugia','fecha_diagnostico']
+    drop_columns =['comentarios', 'fecha_trat2','revisar medida','diam_ao', 'diam_mitral','diam_ao_2','diam_mitral_2','result','indicacion_cirugia','fecha_diagnostico']
     
     df = pr.clean_excel(
         data_file_path,
@@ -29,14 +29,13 @@ def main(data_file_path):
         df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index = False) 
         df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index = False) 
 
-        cases_final = df_cases['diameter']
-        controls_final = df_controls['diameter']
+        cases_final_diam = df_cases['diameter']
+        controls_final_diam = df_controls['diameter']
 
-        mean_cases = cases_final.mean()
-        std_cases  = cases_final.std()
-
-        mean_controls = controls_final.mean()
-        std_controls  = controls_final.std()
+        mean_cases = cases_final_diam.mean()
+        std_cases  = cases_final_diam.std()
+        mean_controls = controls_final_diam.mean()
+        std_controls  = controls_final_diam.std()
 
         print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
         print(f'Mean Final Cases:, {mean_cases} +- {std_cases}')
@@ -44,13 +43,13 @@ def main(data_file_path):
 
         if show_plots:
             plots.labeled_boxplot(
-                [cases_final, controls_final],['Cases', 'Controls'],title = 'diam',ylabel= 'diam'
+                [cases_final_diam, controls_final_diam],['Cases', 'Controls'],title = 'diam',ylabel= 'diam'
             )
 
         print('\n================= P-VALUE,ROC =================\n')
 
-        stats.p_value(cases_final,controls_final)
-        auc,fpr,tpr = stats.roc(cases_final,controls_final)
+        stats.p_value(cases_final_diam,controls_final_diam)
+        auc,fpr,tpr = stats.roc(cases_final_diam,controls_final_diam)
 
         if show_plots:
             plots.labeled_plot(
@@ -75,9 +74,10 @@ def main(data_file_path):
         print('\n================= COX TV FITTER =================\n')
 
         df_data_time = pr.pr_2(event_map,df_analysis)
+        df_data_time = df_data_time[['id','start','stop','event','diameter','surgery']]
 
         df_data_time.to_excel(DATA_DIR + 'df_data_time.xlsx', index=False) 
-
+        
         stats.cox_tvaryng(
             df = df_data_time,
             id_col = 'id',
@@ -100,11 +100,11 @@ def main(data_file_path):
 
 if __name__ == '__main__':
 
-    data_file_path = DATA_DIR + 'data.xlsx'
-    show_plots = False
+    data_file_path = DATA_DIR + 'data_14_01_26.xlsx'
+    show_plots = True
 
     analysis_to_perform = [
-        'basic_stats','cox_ph','cox_tv' # Options: 'basic_stats','cox_ph','cox_tv','fine_gray'
+        'basic_stats','cox_ph','cox_tv','fine_gray' # Options: 'basic_stats','cox_ph','cox_tv','fine_gray'
     ]
 
     event_map = {'surg': 0,'prev': 1,'embo': 1,'muer': 0,'alta': 0}
