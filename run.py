@@ -3,6 +3,8 @@ from test import stats
 
 import process_data as pr
 
+from libs import functions as fn
+
 from config import DATA_DIR
 
 
@@ -18,6 +20,7 @@ def main(data_file_path):
     )
 
     df_data,df_analysis = pr.pr_1(event_map,df)
+    df_data.to_excel(DATA_DIR + 'df_dat.xlsx', index = False) 
 
     if 'basic_stats' in analysis_to_perform:
 
@@ -26,24 +29,33 @@ def main(data_file_path):
         df_cases =  df_data[ df_data['event']==1]
         df_controls = df_data[df_data['event']==0]
 
+        print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
+
         df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index = False) 
         df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index = False) 
 
         cases_final_diam = df_cases['diameter']
         controls_final_diam = df_controls['diameter']
-
-        mean_cases = cases_final_diam.mean()
-        std_cases  = cases_final_diam.std()
-        mean_controls = controls_final_diam.mean()
-        std_controls  = controls_final_diam.std()
-
-        print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
-        print(f'Mean Final Cases:, {mean_cases} +- {std_cases}')
-        print(f'Mean Final Controls: {mean_controls} +- {std_controls}')
+        mean_cases_diam,std_cases_diam,mean_controls_diam,std_controls_diam = fn.mean_and_std(
+            cases_final_diam,controls_final_diam)
+        
+        print(f'Mean Final Cases:, {mean_cases_diam} +- {std_cases_diam}')
+        print(f'Mean Final Controls: {mean_controls_diam} +- {std_controls_diam}')
+        
+        cases_final_IA = df_cases['diam_IA']
+        controls_final_IA = df_controls['diam_IA']
+        mean_cases_IA,std_cases_IA,mean_controls_IA,std_controls_IA = fn.mean_and_std(
+            cases_final_IA,controls_final_IA)
+        
+        print(f'Mean Final Cases IA:, {mean_cases_IA} +- {std_cases_IA}')
+        print(f'Mean Final Controls IA: {mean_controls_IA} +- {std_controls_IA}')
 
         if show_plots:
             plots.labeled_boxplot(
-                [cases_final_diam, controls_final_diam],['Cases', 'Controls'],title = 'diam',ylabel= 'diam'
+                [cases_final_diam,cases_final_IA, controls_final_diam,controls_final_IA],
+                ['Cases','Cases IA','Controls', 'Controls IA'],
+                title = 'diam',
+                ylabel= 'diam'
             )
 
         print('\n================= P-VALUE,ROC =================\n')
@@ -56,19 +68,27 @@ def main(data_file_path):
                 fpr,tpr,auc,title = 'ROC',x_name = 'FP Rate',y_name ='TP Rate'
                 )
 
-    if 'cox_ph' in analysis_to_perform:
 
+    if 'cox_ph' in analysis_to_perform:
         print('\n================= COX PH FITTER =================\n')
 
-        df_data_cox = df_data[[ 'days','event','diameter']]
-        df_data_cox.to_excel(DATA_DIR + 'df_data_cox.xlsx', index=False) 
+        df_data_cox_diam = df_data[[ 'days','event','diameter']]
+        df_data_cox_IA = df_data[[ 'days','event','diam_IA']]
 
         stats.prop_hazard(
-            df = df_data_cox,
+            df = df_data_cox_diam,
             duration_col = 'days',
             event_col = 'event',
             show_plots = show_plots,
         )
+
+        stats.prop_hazard(
+            df = df_data_cox_IA,
+            duration_col = 'days',
+            event_col = 'event',
+            show_plots = show_plots,
+        )
+
     
     if 'cox_tv' in analysis_to_perform:
         print('\n================= COX TV FITTER =================\n')
@@ -89,7 +109,6 @@ def main(data_file_path):
         )
 
     if 'fine_gray' in analysis_to_perform:
-
         print('\n================= FINE GRAY =================\n')
 
         df_fine_gray = pr.pr_3(df_analysis,event_map_gray)  
