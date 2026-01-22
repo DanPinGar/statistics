@@ -42,15 +42,16 @@ def main(data_file_path):
         print(f'Mean Final Cases:, {mean_cases_diam} +- {std_cases_diam}')
         print(f'Mean Final Controls: {mean_controls_diam} +- {std_controls_diam}')
         
-        cases_final_IA = df_cases['diam_IA']
-        controls_final_IA = df_controls['diam_IA']
-        mean_cases_IA,std_cases_IA,mean_controls_IA,std_controls_IA = fn.mean_and_std(
-            cases_final_IA,controls_final_IA)
-        
-        print(f'Mean Final Cases IA:, {mean_cases_IA} +- {std_cases_IA}')
-        print(f'Mean Final Controls IA: {mean_controls_IA} +- {std_controls_IA}')
+        if analysis_IA:
+            cases_final_IA = df_cases['diam_IA']
+            controls_final_IA = df_controls['diam_IA']
+            mean_cases_IA,std_cases_IA,mean_controls_IA,std_controls_IA = fn.mean_and_std(
+                cases_final_IA,controls_final_IA)
+            
+            print(f'Mean Final Cases IA:, {mean_cases_IA} +- {std_cases_IA}')
+            print(f'Mean Final Controls IA: {mean_controls_IA} +- {std_controls_IA}')
 
-        if show_plots:
+        if show_plots and analysis_IA:
             plots.labeled_boxplot(
                 [cases_final_diam,cases_final_IA, controls_final_diam,controls_final_IA],
                 ['Cases','Cases IA','Controls', 'Controls IA'],
@@ -82,12 +83,13 @@ def main(data_file_path):
             show_plots = show_plots,
         )
 
-        stats.prop_hazard(
-            df = df_data_cox_IA,
-            duration_col = 'days',
-            event_col = 'event',
-            show_plots = show_plots,
-        )
+        if analysis_IA:
+            stats.prop_hazard(
+                df = df_data_cox_IA,
+                duration_col = 'days',
+                event_col = 'event',
+                show_plots = show_plots,
+            )
 
     
     if 'cox_tv' in analysis_to_perform:
@@ -119,8 +121,9 @@ def main(data_file_path):
 
 if __name__ == '__main__':
 
-    data_file_path = DATA_DIR + 'data_14_01_26.xlsx'
+    data_file_path = DATA_DIR + 'data_22_01_26.xlsx'
     show_plots = True
+    analysis_IA = False
 
     analysis_to_perform = [
         'basic_stats','cox_ph','cox_tv','fine_gray' # Options: 'basic_stats','cox_ph','cox_tv','fine_gray'
