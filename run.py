@@ -7,16 +7,7 @@ import process_data as pr
 from config import DATA_DIR, DATA_TEMP
 
 
-# =========================
-# Logger initialization
-# =========================
-
 logger = setup_logger(__name__)
-
-
-# =========================
-# Configuration constants
-# =========================
 
 TO_DATETIME_COLUMNS: List[str] = [
     'fecha_muerte', 'fecha_alta', 'fecha_cirugia', 'fecha_eco',
@@ -30,10 +21,6 @@ DROP_COLUMNS: List[str] = [
 ]
 
 
-# =========================
-# Core analysis functions
-# =========================
-
 def run_basic_statistics(
     df_data,
     show_plots: bool,
@@ -44,15 +31,11 @@ def run_basic_statistics(
     df_cases = df_data[df_data['event'] == 1]
     df_controls = df_data[df_data['event'] == 0]
 
-    logger.info(
-        "Cases: %d | Controls: %d",
-        df_cases.shape[0],
-        df_controls.shape[0]
-    )
+    logger.info("Cases: %d | Controls: %d",df_cases.shape[0],df_controls.shape[0])
     logger.debug("df_cases shape: %s", df_cases.shape)
     logger.debug("df_controls shape: %s", df_controls.shape)
 
-    df_cases.to_excel(f'{DATA_TEMP}df_cases.xlsx', index=False)
+    df_cases.to_excel(DATA_TEMP + 'df_cases.xlsx', index=False)
     df_controls.to_excel(f'{DATA_TEMP}df_controls.xlsx', index=False)
 
     cases_diam = df_cases['diameter']
@@ -108,9 +91,7 @@ def run_cox_ph(
     analysis_ia: bool
 ) -> None:
     logger.info("Starting Cox Proportional Hazards analysis")
-
     df_cox_diam = df_data[['days', 'event', 'diameter']]
-    logger.debug("Cox PH dataframe (diameter) shape: %s", df_cox_diam.shape)
 
     stats.prop_hazard(
         df=df_cox_diam,
@@ -141,10 +122,7 @@ def run_cox_time_varying(
 
     df_time = pr.pr_2(event_map, df_analysis)
     df_time = df_time[['id', 'start', 'stop', 'event', 'diameter', 'surgery']]
-
-    logger.debug("Time-varying dataframe shape: %s", df_time.shape)
-
-    df_time.to_excel(f'{DATA_TEMP}df_data_time.xlsx', index=False)
+    df_time.to_excel(DATA_TEMP +'df_data_time.xlsx', index=False)
 
     stats.cox_tvaryng(
         df=df_time,
@@ -163,8 +141,7 @@ def run_fine_gray(
 ) -> None:
     logger.info("Starting Fine & Gray competing risks analysis")
 
-    df_fg = pr.pr_3(df_analysis, event_map_gray)
-    logger.debug("Fine & Gray dataframe shape: %s", df_fg.shape)
+    df_fg = pr.pr_3(event_map_gray,df_analysis)
 
     stats.fine_gray(
         df=df_fg,
@@ -173,10 +150,6 @@ def run_fine_gray(
         col_event='event'
     )
 
-
-# =========================
-# Main pipeline
-# =========================
 
 def main(
     data_file_path: str,
@@ -220,12 +193,6 @@ def main(
         run_fine_gray(df_analysis, event_map_gray)
 
     
-
-
-# =========================
-# Entry point
-# =========================
-
 if __name__ == '__main__':
 
     DATA_FILE_PATH = DATA_DIR + 'data_22_01_26.xlsx'

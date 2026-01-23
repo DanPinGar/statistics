@@ -1,7 +1,10 @@
+from typing import Dict, Iterable, List, Optional, Tuple
+
 import pandas as pd
 
 
-def clean_excel(data_file_path=None, **kwargs):
+
+def clean_excel(data_file_path:str=None, **kwargs) -> pd.DataFrame:
 
     default = {
         'drop_columns': [],
@@ -14,9 +17,7 @@ def clean_excel(data_file_path=None, **kwargs):
     for columna in args['to_datetime_columns']:
         df[columna] = pd.to_datetime(df[columna], errors='coerce')
 
-    df = df.drop(args['drop_columns'], axis=1)
-
-    return df
+    return df.drop(args['drop_columns'], axis=1)
 
 
 def _get_fecha_prev_max(row):
@@ -31,8 +32,12 @@ def _get_fecha_temprana(lista_fechas, lista_eventos):
     return fecha_min, lista_eventos[lista_fechas.index(fecha_min)]
 
 
-def pr_1(event_map, df):
+# ---------------------------------------------------------------------
+# pr_1
+# ---------------------------------------------------------------------
 
+
+def pr_1(event_map, df:pd.DataFrame) -> Tuple[pd.DataFrame,pd.DataFrame]:
 
     df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter','diam_IA'])
 
@@ -77,6 +82,11 @@ def pr_1(event_map, df):
     return df_data, df_analysis
 
 
+# ---------------------------------------------------------------------
+# pr_2
+# ---------------------------------------------------------------------
+
+
 def add_file_data_time(df,evm, fecha_temprana, ident, fecha_eco=None, fecha_init=None,
                        fecha_end=None, diameter=None,diam_IA=None, surgery=None):
 
@@ -100,7 +110,7 @@ def add_file_data_time(df,evm, fecha_temprana, ident, fecha_eco=None, fecha_init
     return df
 
 
-def pr_2(event_map,df_analysis):
+def pr_2(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
 
     df_data_time = pd.DataFrame(
         columns=['id', 'start', 'stop', 'event', 'diameter','diam_IA', 'surgery']
@@ -157,7 +167,12 @@ def pr_2(event_map,df_analysis):
     return df_data_time
 
 
-def pr_3(df_analysis,event_map):
+# ---------------------------------------------------------------------
+# pr_3
+# ---------------------------------------------------------------------
+
+
+def pr_3(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
 
     df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter','diam_IA'])
 
