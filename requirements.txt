@@ -5,3 +5,7 @@ scipy
 scikit-learn
 cmprsk
 openpyxl
+
+
+En la terminal de R:
+install.packages('cmprsk')
