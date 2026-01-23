@@ -1,1 +1,1 @@
-__all__ = ['utilities','functions','plots']
+__all__ = ['utilities','functions','plots','logger_config']

@@ -7,5 +7,5 @@ cmprsk
 openpyxl
 
 
-En la terminal de R:
+R terminal:
 install.packages('cmprsk')
