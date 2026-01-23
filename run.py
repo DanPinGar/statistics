@@ -5,7 +5,7 @@ import process_data as pr
 
 from libs import functions as fn
 
-from config import DATA_DIR
+from config import DATA_DIR,DATA_TEMP
 
 
 def main(data_file_path):
@@ -20,7 +20,7 @@ def main(data_file_path):
     )
 
     df_data,df_analysis = pr.pr_1(event_map,df)
-    df_data.to_excel(DATA_DIR + 'df_dat.xlsx', index = False) 
+    df_data.to_excel(DATA_TEMP + 'df_dat.xlsx', index = False) 
 
     if 'basic_stats' in analysis_to_perform:
 
@@ -31,8 +31,8 @@ def main(data_file_path):
 
         print('Cases:',df_cases.shape[0],'Controls:',df_controls.shape[0])
 
-        df_cases.to_excel(DATA_DIR + 'df_cases.xlsx', index = False) 
-        df_controls.to_excel(DATA_DIR + 'df_controls.xlsx', index = False) 
+        df_cases.to_excel(DATA_TEMP + 'df_cases.xlsx', index = False) 
+        df_controls.to_excel(DATA_TEMP + 'df_controls.xlsx', index = False) 
 
         cases_final_diam = df_cases['diameter']
         controls_final_diam = df_controls['diameter']
@@ -98,7 +98,7 @@ def main(data_file_path):
         df_data_time = pr.pr_2(event_map,df_analysis)
         df_data_time = df_data_time[['id','start','stop','event','diameter','surgery']]
 
-        df_data_time.to_excel(DATA_DIR + 'df_data_time.xlsx', index=False) 
+        df_data_time.to_excel(DATA_TEMP + 'df_data_time.xlsx', index=False) 
         
         stats.cox_tvaryng(
             df = df_data_time,
