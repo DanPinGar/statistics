@@ -1,9 +1,17 @@
 from typing import List, Dict
 
+from libs.logger_config import setup_logger
 from libs import plots, functions as fn
 from test import stats
 import process_data as pr
 from config import DATA_DIR, DATA_TEMP
+
+
+# =========================
+# Logger initialization
+# =========================
+
+logger = setup_logger(__name__)
 
 
 # =========================
@@ -31,12 +39,18 @@ def run_basic_statistics(
     show_plots: bool,
     analysis_ia: bool
 ) -> None:
-    print('\n================= BASIC STATISTICS =================\n')
+    logger.info("Starting basic statistics analysis")
 
     df_cases = df_data[df_data['event'] == 1]
     df_controls = df_data[df_data['event'] == 0]
 
-    print(f'Cases: {df_cases.shape[0]} | Controls: {df_controls.shape[0]}')
+    logger.info(
+        "Cases: %d | Controls: %d",
+        df_cases.shape[0],
+        df_controls.shape[0]
+    )
+    logger.debug("df_cases shape: %s", df_cases.shape)
+    logger.debug("df_controls shape: %s", df_controls.shape)
 
     df_cases.to_excel(f'{DATA_TEMP}df_cases.xlsx', index=False)
     df_controls.to_excel(f'{DATA_TEMP}df_controls.xlsx', index=False)
@@ -44,12 +58,16 @@ def run_basic_statistics(
     cases_diam = df_cases['diameter']
     controls_diam = df_controls['diameter']
 
-    mean_c, std_c, mean_ctrl, std_ctrl = fn.mean_and_std(cases_diam, controls_diam)
+    mean_c, std_c, mean_ctrl, std_ctrl = fn.mean_and_std(
+        cases_diam, controls_diam
+    )
 
-    print(f'Mean Final Cases: {mean_c:.3f} ± {std_c:.3f}')
-    print(f'Mean Final Controls: {mean_ctrl:.3f} ± {std_ctrl:.3f}')
+    logger.info("Mean Cases: %.3f ± %.3f", mean_c, std_c)
+    logger.info("Mean Controls: %.3f ± %.3f", mean_ctrl, std_ctrl)
 
     if analysis_ia:
+        logger.info("Running IA-based diameter analysis")
+
         cases_ia = df_cases['diam_IA']
         controls_ia = df_controls['diam_IA']
 
@@ -57,8 +75,8 @@ def run_basic_statistics(
             cases_ia, controls_ia
         )
 
-        print(f'Mean Final Cases IA: {mean_c_ia:.3f} ± {std_c_ia:.3f}')
-        print(f'Mean Final Controls IA: {mean_ctrl_ia:.3f} ± {std_ctrl_ia:.3f}')
+        logger.info("Mean Cases IA: %.3f ± %.3f", mean_c_ia, std_c_ia)
+        logger.info("Mean Controls IA: %.3f ± %.3f", mean_ctrl_ia, std_ctrl_ia)
 
     if show_plots and analysis_ia:
         plots.labeled_boxplot(
@@ -68,14 +86,16 @@ def run_basic_statistics(
             ylabel='Diameter'
         )
 
-    print('\n================= P-VALUE & ROC =================\n')
-
     stats.p_value(cases_diam, controls_diam)
     auc, fpr, tpr = stats.roc(cases_diam, controls_diam)
 
+    logger.debug("ROC AUC: %.4f", auc)
+
     if show_plots:
         plots.labeled_plot(
-            fpr, tpr, auc,
+            fpr,
+            tpr,
+            auc,
             title='ROC Curve',
             x_name='False Positive Rate',
             y_name='True Positive Rate'
@@ -87,9 +107,10 @@ def run_cox_ph(
     show_plots: bool,
     analysis_ia: bool
 ) -> None:
-    print('\n================= COX PROPORTIONAL HAZARDS =================\n')
+    logger.info("Starting Cox Proportional Hazards analysis")
 
     df_cox_diam = df_data[['days', 'event', 'diameter']]
+    logger.debug("Cox PH dataframe (diameter) shape: %s", df_cox_diam.shape)
 
     stats.prop_hazard(
         df=df_cox_diam,
@@ -99,7 +120,10 @@ def run_cox_ph(
     )
 
     if analysis_ia:
+        logger.info("Running Cox PH with IA diameter")
         df_cox_ia = df_data[['days', 'event', 'diam_IA']]
+        logger.debug("Cox PH dataframe (IA) shape: %s", df_cox_ia.shape)
+
         stats.prop_hazard(
             df=df_cox_ia,
             duration_col='days',
@@ -113,10 +137,12 @@ def run_cox_time_varying(
     event_map: Dict[str, int],
     show_plots: bool
 ) -> None:
-    print('\n================= COX TIME-VARYING =================\n')
+    logger.info("Starting Cox time-varying analysis")
 
     df_time = pr.pr_2(event_map, df_analysis)
     df_time = df_time[['id', 'start', 'stop', 'event', 'diameter', 'surgery']]
+
+    logger.debug("Time-varying dataframe shape: %s", df_time.shape)
 
     df_time.to_excel(f'{DATA_TEMP}df_data_time.xlsx', index=False)
 
@@ -135,9 +161,10 @@ def run_fine_gray(
     df_analysis,
     event_map_gray: Dict[str, int]
 ) -> None:
-    print('\n================= FINE & GRAY =================\n')
+    logger.info("Starting Fine & Gray competing risks analysis")
 
     df_fg = pr.pr_3(df_analysis, event_map_gray)
+    logger.debug("Fine & Gray dataframe shape: %s", df_fg.shape)
 
     stats.fine_gray(
         df=df_fg,
@@ -159,6 +186,8 @@ def main(
     show_plots: bool,
     analysis_ia: bool
 ) -> None:
+    logger.info("Input file: %s", data_file_path)
+    logger.info("Analyses requested: %s", analysis_to_perform)
 
     df = pr.clean_excel(
         data_file_path,
@@ -166,7 +195,16 @@ def main(
         to_datetime_columns=TO_DATETIME_COLUMNS
     )
 
+    logger.debug("Dataframe after cleaning: %s", df.shape)
+
     df_data, df_analysis = pr.pr_1(event_map, df)
+
+    logger.debug(
+        "df_data shape: %s | df_analysis shape: %s",
+        df_data.shape,
+        df_analysis.shape
+    )
+
     df_data.to_excel(f'{DATA_TEMP}df_data.xlsx', index=False)
 
     if 'basic_stats' in analysis_to_perform:
@@ -181,6 +219,8 @@ def main(
     if 'fine_gray' in analysis_to_perform:
         run_fine_gray(df_analysis, event_map_gray)
 
+    
+
 
 # =========================
 # Entry point
@@ -188,7 +228,7 @@ def main(
 
 if __name__ == '__main__':
 
-    DATA_FILE_PATH = f'{DATA_DIR}data_22_01_26.xlsx'
+    DATA_FILE_PATH = DATA_DIR + 'data_22_01_26.xlsx'
 
     ANALYSIS_TO_PERFORM = [
         'basic_stats',
@@ -197,8 +237,21 @@ if __name__ == '__main__':
         'fine_gray'
     ]
 
-    EVENT_MAP = {'surg': 0, 'prev': 1, 'embo': 1, 'muer': 0, 'alta': 0}
-    EVENT_MAP_GRAY = {'surg': 0, 'prev': 1, 'embo': 1, 'muer': 2, 'alta': 0}
+    EVENT_MAP = {
+        'surg': 0,
+        'prev': 1,
+        'embo': 1,
+        'muer': 0,
+        'alta': 0
+    }
+
+    EVENT_MAP_GRAY = {
+        'surg': 0,
+        'prev': 1,
+        'embo': 1,
+        'muer': 2,
+        'alta': 0
+    }
 
     main(
         data_file_path=DATA_FILE_PATH,
