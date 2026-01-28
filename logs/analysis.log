@@ -1,0 +1,78 @@
+2026-01-23 11:03:54 : Input file: C:\PROJECTS\statistics\data/data_22_01_26.xlsx
+2026-01-23 11:03:54 : Analyses requested: ['basic_stats', 'cox_ph', 'cox_tv', 'fine_gray']
+2026-01-23 11:03:54 : Dataframe after cleaning: (427, 21)
+2026-01-23 11:03:55 : df_data shape: (296, 5) | df_analysis shape: (296, 23)
+2026-01-23 11:03:55 : Starting basic statistics analysis
+2026-01-23 11:03:55 : Cases: 46 | Controls: 250
+2026-01-23 11:03:55 : df_cases shape: (46, 5)
+2026-01-23 11:03:55 : df_controls shape: (250, 5)
+2026-01-23 11:03:55 : Mean Cases: 13.565 ± 6.791
+2026-01-23 11:03:55 : Mean Controls: 12.530 ± 6.608
+2026-01-23 11:03:55 : ROC AUC: 0.5520
+2026-01-23 11:04:17 : Starting Cox Proportional Hazards analysis
+2026-01-23 11:04:17 : Cox PH dataframe (diameter) shape: (296, 3)
+2026-01-23 11:04:30 : Starting Cox time-varying analysis
+2026-01-23 11:04:30 : Time-varying dataframe shape: (406, 6)
+2026-01-23 11:04:34 : Starting Fine & Gray competing risks analysis
+2026-01-23 11:04:34 : Fine & Gray dataframe shape: (296, 4)
+2026-01-23 11:04:41 : Input file: C:\PROJECTS\statistics\data/data_22_01_26.xlsx
+2026-01-23 11:04:41 : Analyses requested: ['basic_stats', 'cox_ph', 'cox_tv', 'fine_gray']
+2026-01-23 11:04:41 : Dataframe after cleaning: (427, 21)
+2026-01-23 11:04:41 : df_data shape: (296, 5) | df_analysis shape: (296, 23)
+2026-01-23 11:04:41 : Starting basic statistics analysis
+2026-01-23 11:04:41 : Cases: 46 | Controls: 250
+2026-01-23 11:04:41 : df_cases shape: (46, 5)
+2026-01-23 11:04:41 : df_controls shape: (250, 5)
+2026-01-23 11:04:41 : Mean Cases: 13.565 ± 6.791
+2026-01-23 11:04:41 : Mean Controls: 12.530 ± 6.608
+2026-01-23 11:04:41 : ROC AUC: 0.5520
+2026-01-23 11:04:43 : Starting Cox Proportional Hazards analysis
+2026-01-23 11:04:43 : Cox PH dataframe (diameter) shape: (296, 3)
+2026-01-23 11:04:44 : Starting Cox time-varying analysis
+2026-01-23 11:04:45 : Time-varying dataframe shape: (406, 6)
+2026-01-23 11:04:46 : Starting Fine & Gray competing risks analysis
+2026-01-23 11:04:46 : Fine & Gray dataframe shape: (296, 4)
+2026-01-23 12:43:22 : Input file: C:\PROJECTS\statistics\data/data_22_01_26.xlsx
+2026-01-23 12:43:22 : Analyses requested: ['basic_stats', 'cox_ph', 'cox_tv', 'fine_gray']
+2026-01-23 12:43:22 : Dataframe after cleaning: (427, 21)
+2026-01-23 12:43:22 : df_data shape: (296, 5) | df_analysis shape: (296, 23)
+2026-01-23 12:43:22 : Starting basic statistics analysis
+2026-01-23 12:43:22 : Cases: 46 | Controls: 250
+2026-01-23 12:43:22 : df_cases shape: (46, 5)
+2026-01-23 12:43:22 : df_controls shape: (250, 5)
+2026-01-23 12:43:22 : Mean Cases: 13.565 ± 6.791
+2026-01-23 12:43:22 : Mean Controls: 12.530 ± 6.608
+2026-01-23 12:43:22 : ROC AUC: 0.5520
+2026-01-23 12:43:25 : Starting Cox Proportional Hazards analysis
+2026-01-23 12:43:27 : Starting Cox time-varying analysis
+2026-01-23 12:43:43 : Input file: C:\PROJECTS\statistics\data/data_22_01_26.xlsx
+2026-01-23 12:43:43 : Analyses requested: ['basic_stats', 'cox_ph', 'cox_tv', 'fine_gray']
+2026-01-23 12:43:43 : Dataframe after cleaning: (427, 21)
+2026-01-23 12:43:43 : df_data shape: (296, 5) | df_analysis shape: (296, 23)
+2026-01-23 12:43:43 : Starting basic statistics analysis
+2026-01-23 12:43:43 : Cases: 46 | Controls: 250
+2026-01-23 12:43:43 : df_cases shape: (46, 5)
+2026-01-23 12:43:43 : df_controls shape: (250, 5)
+2026-01-23 12:43:43 : Mean Cases: 13.565 ± 6.791
+2026-01-23 12:43:43 : Mean Controls: 12.530 ± 6.608
+2026-01-23 12:43:43 : ROC AUC: 0.5520
+2026-01-23 12:43:46 : Starting Cox Proportional Hazards analysis
+2026-01-23 12:43:48 : Starting Cox time-varying analysis
+2026-01-23 12:43:50 : Starting Fine & Gray competing risks analysis
+2026-01-23 12:45:48 : Input file: C:\PROJECTS\statistics\data/data_22_01_26.xlsx
+2026-01-23 12:45:48 : Analyses requested: ['basic_stats', 'cox_ph', 'cox_tv', 'fine_gray']
+2026-01-23 12:45:49 : Dataframe after cleaning: (427, 21)
+2026-01-23 12:47:09 : Input file: C:\PROJECTS\statistics\data/data_22_01_26.xlsx
+2026-01-23 12:47:09 : Analyses requested: ['basic_stats', 'cox_ph', 'cox_tv', 'fine_gray']
+2026-01-23 12:47:09 : Dataframe after cleaning: (427, 21)
+2026-01-23 12:47:10 : df_data shape: (296, 5) | df_analysis shape: (296, 23)
+2026-01-23 12:47:10 : Starting basic statistics analysis
+2026-01-23 12:47:10 : Cases: 46 | Controls: 250
+2026-01-23 12:47:10 : df_cases shape: (46, 5)
+2026-01-23 12:47:10 : df_controls shape: (250, 5)
+2026-01-23 12:47:10 : Mean Cases: 13.565 ± 6.791
+2026-01-23 12:47:10 : Mean Controls: 12.530 ± 6.608
+2026-01-23 12:47:10 : ROC AUC: 0.5520
+2026-01-23 12:47:11 : Starting Cox Proportional Hazards analysis
+2026-01-23 12:47:13 : Starting Cox time-varying analysis
+2026-01-23 12:47:14 : Starting Fine & Gray competing risks analysis
