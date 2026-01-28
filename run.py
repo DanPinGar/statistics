@@ -24,16 +24,14 @@ DROP_COLUMNS: List[str] = [
 def run_basic_statistics(
     df_data,
     show_plots: bool,
-    analysis_ia: bool
+    analysis_AI: bool
 ) -> None:
-    logger.info("Starting basic statistics analysis")
+    logger.info("Starting basic statistics analysis \n")
 
     df_cases = df_data[df_data['event'] == 1]
     df_controls = df_data[df_data['event'] == 0]
 
-    logger.info("Cases: %d | Controls: %d",df_cases.shape[0],df_controls.shape[0])
-    logger.debug("df_cases shape: %s", df_cases.shape)
-    logger.debug("df_controls shape: %s", df_controls.shape)
+    logger.info("Cases: %d | Controls: %d \n",df_cases.shape[0],df_controls.shape[0])
 
     df_cases.to_excel(DATA_TEMP + 'df_cases.xlsx', index=False)
     df_controls.to_excel(f'{DATA_TEMP}df_controls.xlsx', index=False)
@@ -46,33 +44,37 @@ def run_basic_statistics(
     )
 
     logger.info("Mean Cases: %.3f ± %.3f", mean_c, std_c)
-    logger.info("Mean Controls: %.3f ± %.3f", mean_ctrl, std_ctrl)
+    logger.info("Mean Controls: %.3f ± %.3f \n", mean_ctrl, std_ctrl)
 
-    if analysis_ia:
-        logger.info("Running IA-based diameter analysis")
+    if analysis_AI:
+        logger.info("Running IA-based diameter analysis \n")
 
-        cases_ia = df_cases['diam_IA']
-        controls_ia = df_controls['diam_IA']
+        cases_ia = df_cases['diam_AI']
+        controls_ia = df_controls['diam_AI']
 
         mean_c_ia, std_c_ia, mean_ctrl_ia, std_ctrl_ia = fn.mean_and_std(
             cases_ia, controls_ia
         )
 
         logger.info("Mean Cases IA: %.3f ± %.3f", mean_c_ia, std_c_ia)
-        logger.info("Mean Controls IA: %.3f ± %.3f", mean_ctrl_ia, std_ctrl_ia)
+        logger.info("Mean Controls IA: %.3f ± %.3f \n", mean_ctrl_ia, std_ctrl_ia)
 
-    if show_plots and analysis_ia:
-        plots.labeled_boxplot(
-            [cases_diam, cases_ia, controls_diam, controls_ia],
-            ['Cases', 'Cases IA', 'Controls', 'Controls IA'],
-            title='Diameter Comparison',
-            ylabel='Diameter'
-        )
+        if show_plots:
+            plots.labeled_boxplot(
+                [cases_diam, cases_ia, controls_diam, controls_ia],
+                ['Cases', 'Cases IA', 'Controls', 'Controls IA'],
+                title='Diameter Comparison',
+                ylabel='Diameter'
+            )
 
     stats.p_value(cases_diam, controls_diam)
     auc, fpr, tpr = stats.roc(cases_diam, controls_diam)
+    logger.debug("ROC AUC: %.4f \n", auc)
 
-    logger.debug("ROC AUC: %.4f", auc)
+    if analysis_AI:
+        stats.p_value(cases_ia, controls_ia)
+        auc_AI, fpr_AI, tpr_AI = stats.roc(cases_ia, controls_ia)
+        logger.debug("ROC AUC: %.4f \n", auc_AI)
 
     if show_plots:
         plots.labeled_plot(
@@ -84,13 +86,23 @@ def run_basic_statistics(
             y_name='True Positive Rate'
         )
 
+        if analysis_AI:
+            plots.labeled_plot(
+            fpr_AI,
+            tpr_AI,
+            auc_AI,
+            title='ROC Curve AI',
+            x_name='False Positive Rate',
+            y_name='True Positive Rate'
+        )
+
 
 def run_cox_ph(
     df_data,
     show_plots: bool,
-    analysis_ia: bool
+    analysis_AI: bool
 ) -> None:
-    logger.info("Starting Cox Proportional Hazards analysis")
+    logger.info("Starting Cox Proportional Hazards analysis \n")
     df_cox_diam = df_data[['days', 'event', 'diameter']]
 
     stats.prop_hazard(
@@ -100,10 +112,9 @@ def run_cox_ph(
         show_plots=show_plots
     )
 
-    if analysis_ia:
-        logger.info("Running Cox PH with IA diameter")
-        df_cox_ia = df_data[['days', 'event', 'diam_IA']]
-        logger.debug("Cox PH dataframe (IA) shape: %s", df_cox_ia.shape)
+    if analysis_AI:
+        logger.info("Running Cox PH with IA diameter \n")
+        df_cox_ia = df_data[['days', 'event', 'diam_AI']]
 
         stats.prop_hazard(
             df=df_cox_ia,
@@ -116,7 +127,8 @@ def run_cox_ph(
 def run_cox_time_varying(
     df_analysis,
     event_map: Dict[str, int],
-    show_plots: bool
+    show_plots: bool,
+    analysis_AI: bool
 ) -> None:
     logger.info("Starting Cox time-varying analysis")
 
@@ -130,9 +142,28 @@ def run_cox_time_varying(
         start_col='start',
         stop_col='stop',
         event_col='event',
+        covariate = 'diameter',
         show_progress=True,
         show_plots=show_plots
     )
+
+    if analysis_AI:
+        df_time = pr.pr_2(event_map, df_analysis)
+        df_time = df_time[['id', 'start', 'stop', 'event', 'diam_AI', 'surgery']]
+        df_time.to_excel(DATA_TEMP +'df_data_time_AI.xlsx', index=False)
+
+        stats.cox_tvaryng(
+            df=df_time,
+            id_col='id',
+            start_col='start',
+            stop_col='stop',
+            event_col='event',
+            covariate = 'diam_AI',
+            show_progress=True,
+            show_plots=show_plots
+        )
+
+        
 
 
 def run_fine_gray(
@@ -157,7 +188,7 @@ def main(
     event_map: Dict[str, int],
     event_map_gray: Dict[str, int],
     show_plots: bool,
-    analysis_ia: bool
+    analysis_AI: bool
 ) -> None:
     logger.info("Input file: %s", data_file_path)
     logger.info("Analyses requested: %s", analysis_to_perform)
@@ -181,13 +212,13 @@ def main(
     df_data.to_excel(f'{DATA_TEMP}df_data.xlsx', index=False)
 
     if 'basic_stats' in analysis_to_perform:
-        run_basic_statistics(df_data, show_plots, analysis_ia)
+        run_basic_statistics(df_data, show_plots, analysis_AI)
 
     if 'cox_ph' in analysis_to_perform:
-        run_cox_ph(df_data, show_plots, analysis_ia)
+        run_cox_ph(df_data, show_plots, analysis_AI)
 
     if 'cox_tv' in analysis_to_perform:
-        run_cox_time_varying(df_analysis, event_map, show_plots)
+        run_cox_time_varying(df_analysis, event_map, show_plots,analysis_AI)
 
     if 'fine_gray' in analysis_to_perform:
         run_fine_gray(df_analysis, event_map_gray)
@@ -195,7 +226,7 @@ def main(
     
 if __name__ == '__main__':
 
-    DATA_FILE_PATH = DATA_DIR + 'data_22_01_26.xlsx'
+    DATA_FILE_PATH = DATA_DIR + 'data_28_01_26.xlsx'
 
     ANALYSIS_TO_PERFORM = [
         'basic_stats',
@@ -226,5 +257,5 @@ if __name__ == '__main__':
         event_map=EVENT_MAP,
         event_map_gray=EVENT_MAP_GRAY,
         show_plots=True,
-        analysis_ia=False
+        analysis_AI= True
     )

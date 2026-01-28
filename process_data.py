@@ -39,7 +39,7 @@ def _get_fecha_temprana(lista_fechas, lista_eventos):
 
 def pr_1(event_map, df:pd.DataFrame) -> Tuple[pd.DataFrame,pd.DataFrame]:
 
-    df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter','diam_IA'])
+    df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter','diam_AI'])
 
     df_analysis = df[df['Valido'] == True].copy()
 
@@ -69,7 +69,7 @@ def pr_1(event_map, df:pd.DataFrame) -> Tuple[pd.DataFrame,pd.DataFrame]:
         fila_data = {
             'id': row['record_id'],
             'diameter': row['Final'],
-            'diam_IA': row['IA'],
+            'diam_AI': row['IA'],
             'days': (fecha_min - row['fecha_eco']).days,
             'event': event_map.get(fecha_temprana)
         }
@@ -88,12 +88,12 @@ def pr_1(event_map, df:pd.DataFrame) -> Tuple[pd.DataFrame,pd.DataFrame]:
 
 
 def add_file_data_time(df,evm, fecha_temprana, ident, fecha_eco=None, fecha_init=None,
-                       fecha_end=None, diameter=None,diam_IA=None, surgery=None):
+                       fecha_end=None, diameter=None,diam_AI=None, surgery=None):
 
     fila_data = {
         'id': ident,
         'diameter': diameter,
-        'diam_IA': diam_IA,
+        'diam_AI': diam_AI,
         'start': (fecha_init - fecha_eco).days,
         'stop': (fecha_end - fecha_eco).days + 0.5,
         'surgery': surgery
@@ -113,7 +113,7 @@ def add_file_data_time(df,evm, fecha_temprana, ident, fecha_eco=None, fecha_init
 def pr_2(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
 
     df_data_time = pd.DataFrame(
-        columns=['id', 'start', 'stop', 'event', 'diameter','diam_IA', 'surgery']
+        columns=['id', 'start', 'stop', 'event', 'diameter','diam_AI', 'surgery']
     )
 
     for _, row in df_analysis.iterrows():
@@ -140,7 +140,7 @@ def pr_2(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
                 fecha_init=row['fecha_eco'],
                 fecha_end=row['fecha_cirugia'],
                 diameter=row['Final'],
-                diam_IA=row['IA'],
+                diam_AI=row['IA'],
                 surgery=0
             )
 
@@ -150,7 +150,7 @@ def pr_2(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
                 fecha_init=row['fecha_cirugia'],
                 fecha_end=fecha_min,
                 diameter=row['Final'],
-                diam_IA=row['IA'],
+                diam_AI=row['IA'],
                 surgery=1
             )
         else:
@@ -160,7 +160,7 @@ def pr_2(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
                 fecha_init=row['fecha_eco'],
                 fecha_end=fecha_min,
                 diameter=row['Final'],
-                diam_IA=row['IA'],
+                diam_AI=row['IA'],
                 surgery=0
             )
 
@@ -174,7 +174,7 @@ def pr_2(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
 
 def pr_3(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
 
-    df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter','diam_IA'])
+    df_data = pd.DataFrame(columns=['id', 'days', 'event', 'diameter','diam_AI'])
 
     for _, row in df_analysis.iterrows():
 
@@ -195,7 +195,7 @@ def pr_3(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
         fila_data = {
             'id': row['record_id'],
             'diameter': row['Final'],
-            'diam_IA': row['IA'],
+            'diam_AI': row['IA'],
             'days': (fecha_min - row['fecha_eco']).days,
             'event': event_map.get(fecha_temprana),
         }
@@ -205,4 +205,4 @@ def pr_3(event_map,df_analysis:pd.DataFrame) -> pd.DataFrame:
 
         df_data.loc[len(df_data)] = fila_data
 
-    return df_data[['days', 'event', 'diameter', 'diam_IA']]
+    return df_data[['days', 'event', 'diameter', 'diam_AI']]

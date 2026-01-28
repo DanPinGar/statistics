@@ -41,6 +41,7 @@ def cox_tvaryng(
         start_col = None,
         stop_col = None,
         event_col = None,
+        covariate = None,
         **kwargs,
         ):
     
@@ -56,7 +57,7 @@ def cox_tvaryng(
         df,id_col=id_col, start_col=start_col, stop_col=stop_col, event_col=event_col, show_progress=args['show_progress']
     )
     ctv.print_summary()
-    ctv.plot(columns=["diameter"])
+    ctv.plot(columns=[covariate])
     if args['show_plots']:
         plt.show()
 
