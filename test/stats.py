@@ -8,9 +8,13 @@ import cmprsk.cmprsk as cmprsk
 from cmprsk import utils
 
 
-def p_value(cases,controls):
+def p_value(cases,controls, **kwargs):
+
+    default = {'title':''}
+    args = {**default,**kwargs}
+
     stat, p_value = ttest_ind(cases, controls)
-    print( f'\n p-value: {p_value:.6f} \n')
+    print( f'p-value {args["title"]}: {p_value:.6f}')
 
 
 def roc(cases=None,controls=None):

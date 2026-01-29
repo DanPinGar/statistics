@@ -26,7 +26,6 @@ def run_basic_statistics(
     show_plots: bool,
     analysis_AI: bool
 ) -> None:
-    logger.info("Starting basic statistics analysis \n")
 
     df_cases = df_data[df_data['event'] == 1]
     df_controls = df_data[df_data['event'] == 0]
@@ -47,8 +46,6 @@ def run_basic_statistics(
     logger.info("Mean Controls: %.3f ± %.3f \n", mean_ctrl, std_ctrl)
 
     if analysis_AI:
-        logger.info("Running IA-based diameter analysis \n")
-
         cases_ia = df_cases['diam_AI']
         controls_ia = df_controls['diam_AI']
 
@@ -57,7 +54,7 @@ def run_basic_statistics(
         )
 
         logger.info("Mean Cases IA: %.3f ± %.3f", mean_c_ia, std_c_ia)
-        logger.info("Mean Controls IA: %.3f ± %.3f \n", mean_ctrl_ia, std_ctrl_ia)
+        logger.info("Mean Controls IA: %.3f ± %.3f", mean_ctrl_ia, std_ctrl_ia)
 
         if show_plots:
             plots.labeled_boxplot(
@@ -69,12 +66,12 @@ def run_basic_statistics(
 
     stats.p_value(cases_diam, controls_diam)
     auc, fpr, tpr = stats.roc(cases_diam, controls_diam)
-    logger.debug("ROC AUC: %.4f \n", auc)
+    logger.info("ROC AUC: %.4f", auc)
 
     if analysis_AI:
-        stats.p_value(cases_ia, controls_ia)
+        stats.p_value(cases_ia, controls_ia, title ='AI')
         auc_AI, fpr_AI, tpr_AI = stats.roc(cases_ia, controls_ia)
-        logger.debug("ROC AUC: %.4f \n", auc_AI)
+        logger.info("ROC AUC AI: %.4f \n", auc_AI)
 
     if show_plots:
         plots.labeled_plot(
@@ -102,7 +99,7 @@ def run_cox_ph(
     show_plots: bool,
     analysis_AI: bool
 ) -> None:
-    logger.info("Starting Cox Proportional Hazards analysis \n")
+    logger.info(" COX PROPORTIONAL HAZARDS: \n")
     df_cox_diam = df_data[['days', 'event', 'diameter']]
 
     stats.prop_hazard(
@@ -113,7 +110,7 @@ def run_cox_ph(
     )
 
     if analysis_AI:
-        logger.info("Running Cox PH with IA diameter \n")
+        logger.info("COX PH AI DIAMETER: \n")
         df_cox_ia = df_data[['days', 'event', 'diam_AI']]
 
         stats.prop_hazard(
@@ -130,7 +127,7 @@ def run_cox_time_varying(
     show_plots: bool,
     analysis_AI: bool
 ) -> None:
-    logger.info("Starting Cox time-varying analysis")
+    logger.info("COX TIME VARYING")
 
     df_time = pr.pr_2(event_map, df_analysis)
     df_time = df_time[['id', 'start', 'stop', 'event', 'diameter', 'surgery']]
@@ -143,7 +140,7 @@ def run_cox_time_varying(
         stop_col='stop',
         event_col='event',
         covariate = 'diameter',
-        show_progress=True,
+        show_progress=False,
         show_plots=show_plots
     )
 
@@ -159,18 +156,16 @@ def run_cox_time_varying(
             stop_col='stop',
             event_col='event',
             covariate = 'diam_AI',
-            show_progress=True,
+            show_progress=False,
             show_plots=show_plots
         )
-
-        
 
 
 def run_fine_gray(
     df_analysis,
     event_map_gray: Dict[str, int]
 ) -> None:
-    logger.info("Starting Fine & Gray competing risks analysis")
+    logger.info("FINE GRAY: \n")
 
     df_fg = pr.pr_3(event_map_gray,df_analysis)
 
@@ -190,8 +185,7 @@ def main(
     show_plots: bool,
     analysis_AI: bool
 ) -> None:
-    logger.info("Input file: %s", data_file_path)
-    logger.info("Analyses requested: %s", analysis_to_perform)
+    logger.info("\n Input file: %s \n", data_file_path)
 
     df = pr.clean_excel(
         data_file_path,
@@ -202,12 +196,6 @@ def main(
     logger.debug("Dataframe after cleaning: %s", df.shape)
 
     df_data, df_analysis = pr.pr_1(event_map, df)
-
-    logger.debug(
-        "df_data shape: %s | df_analysis shape: %s",
-        df_data.shape,
-        df_analysis.shape
-    )
 
     df_data.to_excel(f'{DATA_TEMP}df_data.xlsx', index=False)
 
@@ -226,7 +214,7 @@ def main(
     
 if __name__ == '__main__':
 
-    DATA_FILE_PATH = DATA_DIR + 'data_28_01_26.xlsx'
+    DATA_FILE_PATH = DATA_DIR + 'excels/data_29_01_26.xlsx'
 
     ANALYSIS_TO_PERFORM = [
         'basic_stats',
@@ -256,6 +244,6 @@ if __name__ == '__main__':
         analysis_to_perform=ANALYSIS_TO_PERFORM,
         event_map=EVENT_MAP,
         event_map_gray=EVENT_MAP_GRAY,
-        show_plots=True,
+        show_plots= False,
         analysis_AI= True
     )

@@ -17,7 +17,7 @@ def setup_logger(name: str) -> logging.Logger:
 
     formatter = logging.Formatter(
         fmt="%(asctime)s : %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        datefmt="%H:%M:%S"
     )
 
     console_handler = logging.StreamHandler()
