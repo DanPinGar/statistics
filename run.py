@@ -7,8 +7,6 @@ import process_data as pr
 from config import DATA_DIR, DATA_TEMP
 
 
-logger = setup_logger(__name__)
-
 TO_DATETIME_COLUMNS: List[str] = [
     'fecha_muerte', 'fecha_alta', 'fecha_cirugia', 'fecha_eco',
     'fecha_trat1', 'fecha_prev1', 'fecha_prev2', 'fecha_prev3'
@@ -19,6 +17,8 @@ DROP_COLUMNS: List[str] = [
     'diam_mitral', 'diam_ao_2', 'diam_mitral_2', 'result',
     'indicacion_cirugia', 'fecha_diagnostico'
 ]
+
+logger = setup_logger(__name__)
 
 
 def run_basic_statistics(
@@ -185,6 +185,7 @@ def main(
     show_plots: bool,
     analysis_AI: bool
 ) -> None:
+    
     logger.info("\n Input file: %s \n", data_file_path)
 
     df = pr.clean_excel(

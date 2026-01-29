@@ -9,6 +9,10 @@ LOG_FILE = LOG_DIR / "analysis.log"
 
 
 def setup_logger(name: str) -> logging.Logger:
+
+    if LOG_FILE.exists():
+        LOG_FILE.unlink()
+    
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
