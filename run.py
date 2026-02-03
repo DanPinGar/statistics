@@ -42,8 +42,8 @@ def run_basic_statistics(
         cases_diam, controls_diam
     )
 
-    logger.info("Mean Cases: %.3f ± %.3f", mean_c, std_c)
-    logger.info("Mean Controls: %.3f ± %.3f \n", mean_ctrl, std_ctrl)
+    logger.info("Mean Cases: %.3f +- %.3f", mean_c, std_c)
+    logger.info("Mean Controls: %.3f +- %.3f \n", mean_ctrl, std_ctrl)
 
     if analysis_AI:
         cases_ia = df_cases['diam_AI']
@@ -53,15 +53,15 @@ def run_basic_statistics(
             cases_ia, controls_ia
         )
 
-        logger.info("Mean Cases IA: %.3f ± %.3f", mean_c_ia, std_c_ia)
-        logger.info("Mean Controls IA: %.3f ± %.3f", mean_ctrl_ia, std_ctrl_ia)
+        logger.info("Mean Cases IA: %.3f +- %.3f", mean_c_ia, std_c_ia)
+        logger.info("Mean Controls IA: %.3f +- %.3f", mean_ctrl_ia, std_ctrl_ia)
 
         if show_plots:
             plots.labeled_boxplot(
                 [cases_diam, cases_ia, controls_diam, controls_ia],
                 ['Cases', 'Cases IA', 'Controls', 'Controls IA'],
-                title='Diameter Comparison',
-                ylabel='Diameter'
+                title ='Diameter Comparison',
+                ylabel ='Diameter'
             )
 
     stats.p_value(cases_diam, controls_diam)
@@ -245,6 +245,6 @@ if __name__ == '__main__':
         analysis_to_perform=ANALYSIS_TO_PERFORM,
         event_map=EVENT_MAP,
         event_map_gray=EVENT_MAP_GRAY,
-        show_plots= False,
+        show_plots= True,
         analysis_AI= True
     )

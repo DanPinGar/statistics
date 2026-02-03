@@ -19,3 +19,5 @@ data/peakles_measured_AI/
 data/summaries/
 datasave_pd_anom.xlsx
 datasave_pd.xlsx
+logs/analysis.log
+libs/__pycache__/logger_config.cpython-313.pyc
