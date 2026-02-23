@@ -46,6 +46,10 @@ def run_basic_statistics(
     logger.info("Mean Controls: %.3f +- %.3f \n", mean_ctrl, std_ctrl)
 
     if analysis_AI:
+        nan_ids = df_cases[df_cases['diam_AI'].isna()]['id'].tolist()
+        print(nan_ids)
+        nan_ids = df_controls[df_controls['diam_AI'].isna()]['id'].tolist()
+        print(nan_ids)
         cases_ia = df_cases['diam_AI']
         controls_ia = df_controls['diam_AI']
 
@@ -215,7 +219,7 @@ def main(
     
 if __name__ == '__main__':
 
-    DATA_FILE_PATH = DATA_DIR + 'excels/data_29_01_26.xlsx'
+    DATA_FILE_PATH = DATA_DIR + 'excels/data_23_02_26.xlsx'
 
     ANALYSIS_TO_PERFORM = [
         'basic_stats',
