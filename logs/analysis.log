@@ -1,21 +1,21 @@
-10:34:04 : 
+20:13:03 : 
  Input file: C:\PROJECTS\statistics\data/excels/data_23_02_26.xlsx 
 
-10:34:05 : Dataframe after cleaning: (428, 21)
-10:34:05 : Cases: 45 | Controls: 251 
+20:13:04 : Dataframe after cleaning: (428, 21)
+20:13:04 : Cases: 45 | Controls: 251 
 
-10:34:05 : Mean Cases: 13.600 +- 6.864
-10:34:05 : Mean Controls: 12.520 +- 6.597 
+20:13:04 : Mean Cases: 13.600 +- 6.864
+20:13:04 : Mean Controls: 12.520 +- 6.597 
 
-10:34:05 : Mean Cases IA: 12.244 +- 5.577
-10:34:05 : Mean Controls IA: 12.008 +- 5.553
-10:34:07 : ROC AUC: 0.5521
-10:34:07 : ROC AUC AI: 0.5194 
+20:13:04 : Mean Cases IA: 13.200 +- 4.789
+20:13:04 : Mean Controls IA: 13.510 +- 4.846
+20:13:10 : ROC AUC: 0.5521
+20:13:10 : ROC AUC AI: 0.4678 
 
-10:34:10 :  COX PROPORTIONAL HAZARDS: 
+20:13:14 :  COX PROPORTIONAL HAZARDS: 
 
-10:34:13 : COX PH AI DIAMETER: 
+20:13:20 : COX PH AI DIAMETER: 
 
-10:34:17 : COX TIME VARYING
-10:34:40 : FINE GRAY: 
+20:13:26 : COX TIME VARYING
+20:13:38 : FINE GRAY: 
 
