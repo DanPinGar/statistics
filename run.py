@@ -219,7 +219,7 @@ def main(
     
 if __name__ == '__main__':
 
-    DATA_FILE_PATH = DATA_DIR + 'excels/data_23_02_26.xlsx'
+    DATA_FILE_PATH = DATA_DIR + 'excels/data_5_03_26.xlsx'
 
     ANALYSIS_TO_PERFORM = [
         'basic_stats',
